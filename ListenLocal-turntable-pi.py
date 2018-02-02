@@ -80,38 +80,38 @@ while continue_reading:
 
     # If a card is found
     if status == MIFAREReader.MI_OK:
-    print "Card detected"
+        print("Card detected")
 
-    # We get the UID of the card
-    (status,uid) = MIFAREReader.MFRC522_Anticoll()
+        # We get the UID of the card
+        (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
-    # If we have the UID, we continue
-    if status == MIFAREReader.MI_OK:
+        # If we have the UID, we continue
+        if status == MIFAREReader.MI_OK:
 
-        # We print the card UID
-        #Alternatively you can display the card UID with
-        #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
-        print ("Card UID: " str(uid[0:4]))
+            # We print the card UID
+            #Alternatively you can display the card UID with
+            #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
+            print ("Card UID: " +str(uid[0:4]))
 
-        if uid != justread: #If the UID is different from the value stored in justread, we continue to playing tracks
+            if uid != justread: #If the UID is different from the value stored in justread, we continue to playing tracks
 
-            # Check UID vs track trigger
-            if (uid[0]) == 238 and (uid[1]) == 215: #We pick the values we're looking in the RFID tags UID. For MiFare Light it's usually easier to use the first two values of the UID.
-                player.stop()   #We stop playing any other track that might be playing
-                print("I'm playing track 01!")  #We announce which track is about to be played
-                player = vlc.MediaPlayer(playlist[0])   #We summon the corresponding track in the playlist list
-                player.play() #We start playing the track we just loaded
-                justread = uid #We change the value of justread to keep track of what we are playing
+                # Check UID vs track trigger
+                if (uid[0]) == 238 and (uid[1]) == 215: #We pick the values we're looking in the RFID tags UID. For MiFare Light it's usually easier to use the first two values of the UID.
+                    player.stop()   #We stop playing any other track that might be playing
+                    print("I'm playing track 01!")  #We announce which track is about to be played
+                    player = vlc.MediaPlayer(playlist[0])   #We summon the corresponding track in the playlist list
+                    player.play() #We start playing the track we just loaded
+                    justread = uid #We change the value of justread to keep track of what we are playing
 
 #Basic track playing block follows - uncomment and modify accordingly. Add as many blocks as you have tracks to play.
-            #if (uid[0]) == XXX and (uid[1]) == XXX:
-            #    player.stop()   #We stop playing any other track that might be playing
-            #    print("I'm playing track XX!")  #We announce which track is about to be played
-            #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
-            #    player.play() #We start playing the track we just loaded
-            #    justread = uid #We change the value of justread to keep track of what we are playing
+                #if (uid[0]) == XXX and (uid[1]) == XXX:
+                #    player.stop()   #We stop playing any other track that might be playing
+                #    print("I'm playing track XX!")  #We announce which track is about to be played
+                #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
+                #    player.play() #We start playing the track we just loaded
+                #    justread = uid #We change the value of justread to keep track of what we are playing
 
-            else:
-                print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
+                else:
+                    print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
 
 #That's it!
