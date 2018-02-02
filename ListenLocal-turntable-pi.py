@@ -61,12 +61,15 @@ player = vlc.MediaPlayer()
 #We define the VLC playlist
 playlist = ['/home/pi/01.mp3', '/home/pi/02.mp3', '/home/pi/03.mp3', '/home/pi/04.mp3']
 
+#We define the general volume level for VLC. Adjust to your needs, anywhere between 0 and 100.
+player.audio_set_volume(95)
+
 #Create variables to store and compare uids
 uid = ()
 justread = ()
 
 # Welcome message
-print "Welcome to the RFID turntable"
+print "Welcome to the Listen Local RFID turntable"
 print "Press Ctrl-C to stop."
 
 # This loop keeps checking for chips. If one is near it will get the UID and au$
