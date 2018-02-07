@@ -26,6 +26,12 @@
 #| RST  | 22    | GPIO25     |
 #| 3.3V | 1     | 3V3        |
 
+#Next up:
+#-Reliable volume control
+#-Find a way to not poll for RFID tags so often
+
+#The party begins below this line!
+
 #We import the GPIO library
 import RPi.GPIO as GPIO
 
@@ -61,9 +67,6 @@ player = vlc.MediaPlayer()
 #We define the VLC playlist
 playlist = ['/home/pi/01.mp3', '/home/pi/02.mp3', '/home/pi/03.mp3', '/home/pi/04.mp3']
 
-#We define the general volume level for VLC. Adjust to your needs, anywhere between 0 and 100.
-player.audio_set_volume(95)
-
 #Create variables to store and compare uids
 uid = ()
 justread = ()
@@ -93,16 +96,6 @@ while continue_reading:
             #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
             print ("Card UID: " +str(uid[0:4]))
 
-            if uid != justread: #If the UID is different from the value stored in justread, we continue to playing tracks
-
-                # Check UID vs track trigger
-                if (uid[0]) == 238 and (uid[1]) == 215: #We pick the values we're looking in the RFID tags UID. For MiFare Light it's usually easier to use the first two values of the UID.
-                    player.stop()   #We stop playing any other track that might be playing
-                    print("I'm playing track 01!")  #We announce which track is about to be played
-                    player = vlc.MediaPlayer(playlist[0])   #We summon the corresponding track in the playlist list
-                    player.play() #We start playing the track we just loaded
-                    justread = uid #We change the value of justread to keep track of what we are playing
-
 #Basic track playing block follows - uncomment and modify accordingly. Add as many blocks as you have tracks to play.
                 #if (uid[0]) == XXX and (uid[1]) == XXX:
                 #    player.stop()   #We stop playing any other track that might be playing
@@ -110,6 +103,8 @@ while continue_reading:
                 #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
                 #    player.play() #We start playing the track we just loaded
                 #    justread = uid #We change the value of justread to keep track of what we are playing
+
+            justread = uid #We change the value of justread to match the latest tag we read
 
                 else:
                     print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
