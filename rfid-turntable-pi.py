@@ -1,18 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-#This is the Raspberry Pi port of the Listen Local RFID turntable developed for the Johnson County Library.
-#Original project at https://github.com/jocolibrarymakerspace/ListenLocal-turntable-arduino
+#This is the Raspberry Pi RFID turntable developed for the Johnson County Library.
+#Complete tutorial at [COMING SOON]
+#Original Arduino project at https://github.com/jocolibrarymakerspace/ListenLocal-turntable-arduino
 
 #Links
 #Johnson County Library - http://jocolibrary.org/
-#Listen Local - https://www.jocolibrary.org/we-recommend/listen-local
 #Johnson County Library MakerSpace - https://www.jocolibrary.org/we-recommend/listen-local
+#Listen Local - https://www.jocolibrary.org/we-recommend/listen-local
+
+#It requires:
+#- SPI-Py installed from https://github.com/lthiey/SPI-Py
+#- MFRC522-python from https://github.com/mxgxw/MFRC522-python
+#- VLC-python bindings from https://github.com/oaubert/python-vlc
 
 #This code is based off of:
-#- the Read.py example included with MFRC522-python at https://github.com/mxgxw/MFRC522-python
+#- the Read.py example included with MFRC522-python
 #- the VLC Python binding examples at http://git.videolan.org/?p=vlc/bindings/python.git;a=tree;f=generated;b=HEAD
-#It requires to have SPI-Py installed from the https://github.com/lthiey/SPI-Py
 
 #MFRC522 RFID reader wiring
 #| Name | Pin # | Pin name   |
@@ -28,12 +33,14 @@
 
 #Next up:
 #-Reliable volume control
-#-Find a way to not poll for RFID tags so often
 
-#The party begins below this line!
+#---Code begins below this line!---
 
 #We import the GPIO library
 import RPi.GPIO as GPIO
+
+#We import the time library
+import time
 
 #We import the MFRC522 RFID reader library
 import MFRC522
@@ -65,6 +72,7 @@ MIFAREReader = MFRC522.MFRC522()
 player = vlc.MediaPlayer()
 
 #We define the VLC playlist
+#Add as many tracks as you need, just make sure to respect the formatting!
 playlist = ['/home/pi/01.mp3', '/home/pi/02.mp3', '/home/pi/03.mp3', '/home/pi/04.mp3']
 
 #Create variables to store and compare uids
@@ -96,17 +104,33 @@ while continue_reading:
             #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
             print ("Card UID: " +str(uid[0:4]))
 
-#Basic track playing block follows - uncomment and modify accordingly. Add as many blocks as you have tracks to play.
-                #if (uid[0]) == XXX and (uid[1]) == XXX:
+            #We compare the card's 'UID to whatever we might have just read
+            if justread != uid:
+                #This is where the music playing begins!
+                if (uid[0]) == XXX and (uid[1]) == XXX: #Change the uid values to match your RFID tags
+                player.stop()   #We stop playing any other track that might be playing
+                print("I'm playing track XX!")  #We announce which track is about to be played
+                player = vlc.MediaPlayer(playlist[0])   #We request the  track in the playlist list
+                player.play() #We start playing the track we just loaded
+
+                #Sample additional track playing block follows - uncomment and modify accordingly.
+                #Add as many blocks as you have tracks to play.
+                #elif (uid[0]) == XXX and (uid[1]) == XXX:
                 #    player.stop()   #We stop playing any other track that might be playing
                 #    print("I'm playing track XX!")  #We announce which track is about to be played
                 #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
                 #    player.play() #We start playing the track we just loaded
-                #    justread = uid #We change the value of justread to keep track of what we are playing
+                #elif (uid[0]) == XXX and (uid[1]) == XXX: #Change the uid values to match your RFID tags
+                #player.stop()   #We stop playing any other track that might be playing
+                #print("I'm playing track XX!")  #We announce which track is about to be played
+                #player = vlc.MediaPlayer(playlist[0])   #We request the  track in the playlist list
+                #player.play() #We start playing the track we just loaded
 
+            #We store the card's uid into the justread variable for comparing later
             justread = uid #We change the value of justread to match the latest tag we read
 
-                else:
-                    print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
+            else:
+                print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
+                time.sleep(5) #If the same card is still on the reader, we take a 5 seconds break before polling for RFID again
 
-#That's it!
+#And we do it all over again!
