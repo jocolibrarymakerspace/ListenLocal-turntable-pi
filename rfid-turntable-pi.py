@@ -10,18 +10,18 @@
 #Johnson County Library MakerSpace - https://www.jocolibrary.org/we-recommend/listen-local
 #Listen Local - https://www.jocolibrary.org/we-recommend/listen-local
 
-#It requires:
-#- SPI-Py installed from https://github.com/lthiey/SPI-Py
+#This project requires:
+#- SPI-Py installed from https://github.com/lthiery/SPI-Py
 #- MFRC522-python from https://github.com/mxgxw/MFRC522-python
 #- VLC-python bindings from https://github.com/oaubert/python-vlc
 
 #This code is based off of:
 #- the Read.py example included with MFRC522-python
-#- the VLC Python binding examples at http://git.videolan.org/?p=vlc/bindings/python.git;a=tree;f=generated;b=HEAD
+#- the VLC Python binding examples at https://wiki.videolan.org/Python_bindings
 
 #MFRC522 RFID reader wiring
 #| Name | Pin # | Pin name   |
-#|------|-------|------------|
+#|------|-------|------------|  
 #| SDA  | 24    | GPIO8      |
 #| SCK  | 23    | GPIO11     |
 #| MOSI | 19    | GPIO10     |
@@ -32,7 +32,8 @@
 #| 3.3V | 1     | 3V3        |
 
 #Next up:
-#-Reliable volume control
+#-General cleanup for redundancies
+#-RFID tag detection feature
 
 #---Code begins below this line!---
 
@@ -95,7 +96,7 @@ while continue_reading:
 
     # If a tag is found
     if status == MIFAREReader.MI_OK:
-        print("Card detected")
+        print("Tag detected")
 
         # We get the UID of the tag
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
@@ -105,8 +106,8 @@ while continue_reading:
 
             # We print the tag UID
             #Alternatively you can display the tag UID with
-            #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
-            print ("Card UID: " +str(uid[0:4]))
+            #print ("Tag UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
+            print ("Tag UID: " +str(uid[0:4]))
 
             #We compare the tag's 'UID with whatever we might have just read
             if justread != uid:
