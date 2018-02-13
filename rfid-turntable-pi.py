@@ -36,13 +36,13 @@
 
 #---Code begins below this line!---
 
-#We import the GPIO library
+#We import the GPIO module
 import RPi.GPIO as GPIO
 
-#We import the time library
+#We import the time module
 import time
 
-#We import the MFRC522 RFID reader library
+#We import the MFRC522 RFID reader module. Remember to copy MFRC522.py in the same folder as the turntable script!
 import MFRC522
 
 #We import the signal library
@@ -59,23 +59,23 @@ def end_read(signal,frame):
     global continue_reading
     print "Ctrl+C captured, ending read."
     continue_reading = False
-    GPIO.cleanup()  #We clean up the GPIO data
     player.stop()   #We stop VLC
+    GPIO.cleanup()  #We clean up the GPIO data
 
 # We hook the SIGINT data
 signal.signal(signal.SIGINT, end_read)
 
-# We create an object of the class MFRC522
+# We create an object of the MFRC522 class
 MIFAREReader = MFRC522.MFRC522()
 
-#We create objects of the VLC class
+#We create an object of the VLC class
 player = vlc.MediaPlayer()
 
 #We define the VLC playlist
-#Add as many tracks as you need, just make sure to respect the formatting!
+#Add as many tracks as you need, just make sure to respect the formatting and put in the correct path!
 playlist = ['/home/pi/01.mp3', '/home/pi/02.mp3', '/home/pi/03.mp3', '/home/pi/04.mp3']
 
-#Create variables to store and compare uids
+#Create lists to store and compare uids
 uid = ()
 justread = ()
 
@@ -83,28 +83,28 @@ justread = ()
 print "Welcome to the Listen Local RFID turntable"
 print "Press Ctrl-C to stop."
 
-# This loop keeps checking for chips. If one is near it will get the UID and au$
+# This loop keeps checking for RFID tags. If one is near it will get the UID.
 while continue_reading:
 
     # Scan for cards
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
-    # If a card is found
+    # If a tag is found
     if status == MIFAREReader.MI_OK:
         print("Card detected")
 
-        # We get the UID of the card
+        # We get the UID of the tag
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
         # If we have the UID, we continue
         if status == MIFAREReader.MI_OK:
 
-            # We print the card UID
-            #Alternatively you can display the card UID with
+            # We print the tag UID
+            #Alternatively you can display the tag UID with
             #print ("Card UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
             print ("Card UID: " +str(uid[0:4]))
 
-            #We compare the card's 'UID to whatever we might have just read
+            #We compare the tag's 'UID with whatever we might have just read
             if justread != uid:
                 #This is where the music playing begins!
                 if (uid[0]) == XXX and (uid[1]) == XXX: #Change the uid values to match your RFID tags
@@ -122,10 +122,10 @@ while continue_reading:
                 #    player.play() #We start playing the track we just loaded
 
                 #We store the card's uid into the justread variable for comparing later
-                justread = uid #We change the value of justread to match the latest tag we read
+                justread = uid #We change the value of justread to store the latest tag UID we read
 
             else:
                 print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
-                time.sleep(5) #If the same card is still on the reader, we take a 5 seconds break before polling for RFID again
+                time.sleep(5) #If the same card is still on the reader, we take a 5 seconds break before polling for RFID again. This does not interrupt the track being played.
 
 #And we do it all over again!
