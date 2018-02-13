@@ -73,7 +73,11 @@ player = vlc.MediaPlayer()
 
 #We define the VLC playlist
 #Add as many tracks as you need, just make sure to respect the formatting and put in the correct path!
-playlist = ['/home/pi/01.mp3', '/home/pi/02.mp3', '/home/pi/03.mp3', '/home/pi/04.mp3']
+#We use implied continuation of the list to make it easier to read.
+playlist = ['/home/pi/01.mp3',
+            '/home/pi/02.mp3',
+            '/home/pi/03.mp3',
+            '/home/pi/04.mp3']
 
 #Create lists to store and compare uids
 uid = ()
