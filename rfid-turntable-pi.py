@@ -58,7 +58,7 @@ continue_reading = True
 # We capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
     global continue_reading
-    print "Ctrl+C captured, ending read."
+    print ("Ctrl+C captured, ending read.")
     continue_reading = False
     player.stop()   #We stop VLC
     GPIO.cleanup()  #We clean up the GPIO data
@@ -94,43 +94,46 @@ while continue_reading:
     # Scan for cards
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
+    #If there is no tag detected
+    if status == MIFAREReader.MI_NOTAG_ERR:
+        print("No tag detected")
+        
+    #If we have a reader problem
+    elif status == MIFAREReader.MI_ERR:
+        print("Problem detected")
+
     # If a tag is found
-    if status == MIFAREReader.MI_OK:
+    elif status == MIFAREReader.MI_OK:
         print("Tag detected")
 
         # We get the UID of the tag
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
-        # If we have the UID, we continue
-        if status == MIFAREReader.MI_OK:
+        # We print the tag UID
+        #Alternatively you can display the tag UID with
+        #print ("Tag UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
+        print ("Tag UID: " +str(uid[0:4]))
 
-            # We print the tag UID
-            #Alternatively you can display the tag UID with
-            #print ("Tag UID: " str(uid[0]) + str(uid[1] + str(uid[2] + str(uid[3])
-            print ("Tag UID: " +str(uid[0:4]))
+        #We compare the tag's 'UID with whatever we might have just read
+        if justread != uid:
+            #This is where the music playing begins!
+            if (uid[0]) == XXX and (uid[1]) == XXX: #Change the uid values to match your RFID tags
+                player.stop()   #We stop playing any other track that might be playing
+                print("I'm playing track XX!")  #We announce which track is about to be played
+                player = vlc.MediaPlayer(playlist[0])   #We request the  track in the playlist list
+                player.play() #We start playing the track we just loaded
 
-            #We compare the tag's 'UID with whatever we might have just read
-            if justread != uid:
-                #This is where the music playing begins!
-                if (uid[0]) == XXX and (uid[1]) == XXX: #Change the uid values to match your RFID tags
-                    player.stop()   #We stop playing any other track that might be playing
-                    print("I'm playing track XX!")  #We announce which track is about to be played
-                    player = vlc.MediaPlayer(playlist[0])   #We request the  track in the playlist list
-                    player.play() #We start playing the track we just loaded
+            #Sample additional track playing block follows - uncomment and modify accordingly.
+            #Add as many blocks as you have tracks to play.
+            #elif (uid[0]) == XXX and (uid[1]) == XXX:
+            #    player.stop()   #We stop playing any other track that might be playing
+            #    print("I'm playing track XX!")  #We announce which track is about to be played
+            #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
+            #    player.play() #We start playing the track we just loaded
 
-                #Sample additional track playing block follows - uncomment and modify accordingly.
-                #Add as many blocks as you have tracks to play.
-                #elif (uid[0]) == XXX and (uid[1]) == XXX:
-                #    player.stop()   #We stop playing any other track that might be playing
-                #    print("I'm playing track XX!")  #We announce which track is about to be played
-                #    player = vlc.MediaPlayer(playlist[X])   #We summon the corresponding track in the playlist list
-                #    player.play() #We start playing the track we just loaded
+            #We store the card's uid into the justread variable for comparing later
+            justread = uid #We change the value of justread to store the latest tag UID we read
 
-                #We store the card's uid into the justread variable for comparing later
-                justread = uid #We change the value of justread to store the latest tag UID we read
-
-            else:
-                print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
-                time.sleep(5) #If the same card is still on the reader, we take a 5 seconds break before polling for RFID again. This does not interrupt the track being played.
-
-#And we do it all over again!
+        else:
+            print("You're already playing that track!") #We let the user know that the track is being played (And we don't try playing it from the top)
+            time.sleep(5) #If the same card is still on the reader, we take a 5 seconds break before polling for RFID again. This does not interrupt the track being played.
